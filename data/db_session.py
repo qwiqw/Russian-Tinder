@@ -1,34 +1,52 @@
-import sqlalchemy as sa
-import sqlalchemy.orm as orm
-from sqlalchemy.orm import Session
+from sqlalchemy import create_engine, Column, Integer, String, Enum
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+import enum
+
+# Определите, какую базу данных использовать (SQLite для примера).
+# Замените строку подключения, чтобы использовать другую базу данных (например, PostgreSQL, MySQL).
+DATABASE_URL = "sqlite:///db/users.db"
+
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base = declarative_base()
 
 
-SqlAlchemyBase = orm.declarative_base()
+# Определите Enum для пола
+class Gender(enum.Enum):
+    MALE = "Мужской"
+    FEMALE = "Женский"
 
 
-def global_init(db_file):
-    global __factory
-
-    if __factory:
-        return
-
-    if not db_file or not db_file.strip():
-        raise Exception("Необходимо указать файл базы данных.")
-
-    conn_str = f'sqlite:///{db_file.strip()}?check_same_thread=False'
-    print(f"Подключение к базе данных по адресу {conn_str}")
-
-    engine = sa.create_engine(conn_str, echo=False)
-    __factory = orm.sessionmaker(bind=engine)
-
-    from . import __all_models
-
-    SqlAlchemyBase.metadata.create_all(engine)
+# Определите Enum для уровня образования
+class EducationLevel(enum.Enum):
+    SCHOOL = "Школьное"
+    SECONDARY = "Среднее"
+    HIGHER = "Высшее"
+    DOCTOR = "Доктор наук"
+    NONE = "Отсутствует"
 
 
-def create_session() -> Session:
-    global __factory
-    return __factory()
+class Users(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True)
+    password = Column(String)  # Внимание: пароли нужно хэшировать!
+    gender = Column(Enum(Gender))
+    age = Column(Integer)
+    education = Column(Enum(EducationLevel))
+    profession = Column(String)
 
 
-__factory = None
+Base.metadata.create_all(bind=engine)  # Создает таблицы в базе данных
+
+
+# Функция для получения сессии базы данных (для использования в Flask)
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
