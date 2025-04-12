@@ -88,13 +88,13 @@ def register():
             except sqlite3.Error as e:
                 error = f"Ошибка базы данных: {e}"
                 db.close() # Close the database even on error
-                return render_template('register.html', error=error) # Return the form with the error
+                return render_template('register.html', error=error)
 
-            finally:  # This is no longer needed, since DB is closed in each branch.
+            finally:
                 pass
 
 
-    return render_template('register.html', error=error) # Return form on GET requests
+    return render_template('register.html', error=error) 
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -112,7 +112,7 @@ def login():
         db.close()
 
         if user:
-            session['name'] = user[1]  # Предполагается, что имя находится во втором столбце
+            session['name'] = user[1] 
             session['password'] = user[2]
             session['gender'] = user[3]
             session['age'] = user[4]
