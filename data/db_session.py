@@ -3,8 +3,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import enum
 
-# Определите, какую базу данных использовать (SQLite для примера).
-# Замените строку подключения, чтобы использовать другую базу данных (например, PostgreSQL, MySQL).
 DATABASE_URL = "sqlite:///db/users.db"
 
 engine = create_engine(DATABASE_URL)
@@ -19,7 +17,6 @@ class Gender(enum.Enum):
     FEMALE = "Женский"
 
 
-# Определите Enum для уровня образования
 class EducationLevel(enum.Enum):
     SCHOOL = "Школьное"
     SECONDARY = "Среднее"
@@ -33,7 +30,7 @@ class Users(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
-    password = Column(String)  # Внимание: пароли нужно хэшировать!
+    password = Column(String)  # 
     gender = Column(Enum(Gender))
     age = Column(Integer)
     education = Column(Enum(EducationLevel))
