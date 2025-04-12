@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация - Russian Tinder</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #fce4ec; /* Нежный розовый фон */
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #e91e63; /* Ярко-розовый цвет текста */
+        }
+
+        .container {
+            text-align: center;
+            background-color: white; /* Белый фон для формы */
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 400px;
+        }
+
+        h2 {
+            font-size: 2.5em; /* Увеличенный размер заголовка */
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            text-align: left; /* Выравнивание по левому краю */
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #e91e63; /* Розовая рамка */
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+
+        input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        button {
+            display: inline-block;
+            padding: 15px 30px;
+            background-color: #e91e63;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border: none; /* Убираем рамку у кнопки */
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #c2185b;
+        }
+
+        .error {
+            color: red;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        a {
+            color: #e91e63;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Регистрация</h2>
+        <form method="post">
+            <label for="name">Имя:</label>
+            <input type="text" id="name" name="name" required><br>
+
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" name="password" required><br>
+
+            <label>Пол:</label>
+            <input type="radio" id="male" name="gender" value="Мужской" required>
+            <label for="male">Мужской</label>
+            <input type="radio" id="female" name="gender" value="Женский" required>
+            <label for="female">Женский</label><br>
+
+            <label for="age">Возраст:</label>
+            <input type="number" id="age" name="age" min="18" max="100" required><br>
+
+            <label for="education">Образование:</label>
+            <select id="education" name="education" required>
+                <option value="">Выберите...</option>
+                <option value="Среднее">Среднее</option>
+                <option value="Среднее специальное">Среднее специальное</option>
+                <option value="Высшее">Высшее</option>
+                <option value="Неоконченное высшее">Неоконченное высшее</option>
+            </select><br>
+
+            <label for="profession">Профессия:</label>
+            <input type="text" id="profession" name="profession" required><br>
+
+            <button type="submit">Отправить</button>
+            <p>Уже зарегистрированы? <a href="#">Войти</a></p>
+        </form>
+    </div>
+</body>
+</html>
