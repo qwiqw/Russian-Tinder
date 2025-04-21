@@ -24,12 +24,12 @@ def register():
         password = request.form['password']
         gender = request.form['gender']
         age = int(request.form['age'])
-        profession = request.form['additionally']
+        additionally= request.form['additionally']
 
         if not is_russian(name):
             error = "Имя должно содержать только русские буквы."
-        elif not is_russian(profession):
-            error = "Профессия должна быть на русском языке."
+        elif not additionally:
+            error = "Напишите что-нибудь о себе"
         elif age < 18:
             error = "Вы должны быть старше 18 лет для регистрации."
     return render_template('register.html', error=error)
