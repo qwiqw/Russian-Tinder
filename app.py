@@ -1,38 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import os
 import re
-import hashlib
-import sqlite3
+from data import db_session
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
-
-DATABASE = 'db/users.db'
-
-
-def create_db():
-    """Создает базу данных, если она не существует, и таблицу users."""
-    db = sqlite3.connect(DATABASE)
-    cursor = db.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            password TEXT NOT NULL,
-            gender TEXT NOT NULL,
-            age INTEGER NOT NULL,
-            education TEXT NOT NULL,
-            profession TEXT NOT NULL
-        )
-    ''')
-    db.commit()
-    db.close()
-
-
-def get_db():
-    """Подключается к базе данных."""
-    db = sqlite3.connect(DATABASE)
-    return db
 
 
 @app.route('/')
@@ -41,7 +13,6 @@ def landing():
 
 
 def is_russian(text):
-    """Проверяет, состоит ли строка только из русских букв и пробелов."""
     return bool(re.match(r'^[а-яА-Я\s]+$', text))
 
 
@@ -64,66 +35,8 @@ def register():
             error = "Образование должно быть на русском языке."
         elif age < 18:
             error = "Вы должны быть старше 18 лет для регистрации."
-        else:
-            name = name.capitalize()
-            hashed_password = hashlib.sha256(password.encode('utf-8')).hexdigest()
+    return render_template('register.html', error=error)
 
-            db = get_db()
-            cursor = db.cursor()
-            try:
-                cursor.execute('''
-                    INSERT INTO users (name, password, gender, age, education, profession)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                ''', (name, hashed_password, gender, age, education, profession))
-                db.commit()
-                session['name'] = name
-                session['password'] = hashed_password
-                session['gender'] = gender
-                session['age'] = age
-                session['education'] = education
-                session['profession'] = profession
-                db.close()  # Close db before redirect
-                return redirect(url_for('profile'))
-
-            except sqlite3.Error as e:
-                error = f"Ошибка базы данных: {e}"
-                db.close() # Close the database even on error
-                return render_template('register.html', error=error)
-
-            finally:
-                pass
-
-
-    return render_template('register.html', error=error) 
-
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    error = None
-    if request.method == 'POST':
-        name = request.form['name']
-        password = request.form['password']
-        hashed_password = hashlib.sha256(password.encode('utf-8')).hexdigest()
-
-        db = get_db()
-        cursor = db.cursor()
-        cursor.execute('SELECT * FROM users WHERE name = ? AND password = ?', (name, hashed_password))
-        user = cursor.fetchone()
-        db.close()
-
-        if user:
-            session['name'] = user[1] 
-            session['password'] = user[2]
-            session['gender'] = user[3]
-            session['age'] = user[4]
-            session['education'] = user[5]
-            session['profession'] = user[6]
-
-            return redirect(url_for('profile'))
-        else:
-            error = "Неверное имя пользователя или пароль"
-
-    return render_template('sing_in.html', error=error)
 
 @app.route('/profile')
 def profile():
@@ -134,9 +47,5 @@ def profile():
 
 
 if __name__ == '__main__':
-    # Create the 'db' directory if it doesn't exist
-    if not os.path.exists('db'):
-        os.makedirs('db')
-    create_db()  # Create the database if it doesn't exist
-
-    app.run(debug=True)
+    db_session.global_init('db/users.db')
+    app.run(host='127.0.0.1', port=8080)
