@@ -43,6 +43,11 @@ def profile():
         return redirect(url_for('login'))
 
 
+@app.route('/login')
+def hide():
+    return render_template('sing_in.html')
+
+
 if __name__ == '__main__':
     db_session.global_init('db/users.db')
     app.run(host='127.0.0.1', port=8080)
