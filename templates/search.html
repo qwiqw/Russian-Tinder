@@ -3,17 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Профиль - Russian Tinder</title>
+    <title>Результаты поиска - Russian Tinder</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
             background-color: #ffebee;
             margin: 0;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             min-height: 100vh;
             color: #d81b60;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
 
         .profile-container {
@@ -23,12 +30,7 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             text-align: center;
             width: 400px;
-        }
-
-        h1 {
-            font-size: 2.5em;
             margin-bottom: 20px;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         img {
@@ -46,7 +48,7 @@
             margin-bottom: 15px;
         }
 
-        .logout-button {
+        .back-button {
             display: inline-block;
             padding: 12px 25px;
             background-color: #d81b60;
@@ -56,21 +58,29 @@
             font-size: 1em;
             transition: background-color 0.3s ease;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            margin-top: 20px;
         }
 
-        .logout-button:hover {
+        .back-button:hover {
             background-color: #ad1457;
         }
     </style>
 </head>
 <body>
-    <div class="profile-container">
-        <img src="{{ user.image }}" alt="Фото профиля">
-        <h1>Имя: {{ user.name }}</h1>
-        <p>Возраст: {{ user.age }}</p>
-        <p>Пол: {{ user.gender }}</p>
-        <p>О себе: {{ user.additionally }}</p>
-        <a href="/search" class="logout-button">Поиск своей любви!</a>
-    </div>
+    <h1>Найденные профили</h1>
+    {% if profiles %}
+        {% for profile in profiles %}
+            <div class="profile-container">
+                <img src="{{ profile.image }}" alt="Фото профиля">
+                <h1>Имя: {{ profile.name }}</h1>
+                <p>Возраст: {{ profile.age }}</p>
+                <p>Пол: {{ profile.gender }}</p>
+                <p>О себе: {{ profile.additionally }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>К сожалению, профили не найдены.</p>
+    {% endif %}
+    <a href="/profile" class="back-button">Вернуться в свой профиль</a>
 </body>
 </html>
