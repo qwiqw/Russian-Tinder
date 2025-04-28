@@ -101,7 +101,7 @@ def login():
         else:
             error = "Неверное имя пользователя или пароль."
 
-    return render_template('login.html', error=error)
+    return render_template('sing_in.html', error=error)
 
 
 if __name__ == '__main__':
