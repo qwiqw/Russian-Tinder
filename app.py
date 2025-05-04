@@ -20,58 +20,58 @@ def landing():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    oshibochka = None
-    formochka_dannih = {}
+    error = None
+    form_data = {}
 
     if request.method == 'POST':
-        formochka_dannih['name'] = request.form['name']
-        formochka_dannih['password'] = request.form['password']
-        formochka_dannih['gender'] = request.form['gender']
-        formochka_dannih['age'] = request.form['age']
-        formochka_dannih['additionally'] = request.form['additionally']
+        form_data['name'] = request.form['name']
+        form_data['password'] = request.form['password']
+        form_data['gender'] = request.form['gender']
+        form_data['age'] = request.form['age']
+        form_data['additionally'] = request.form['additionally']
 
         db_sess = db_session.create_session()
-        existing_user = db_sess.query(User).filter(User.name == formochka_dannih['name']).first()
+        existing_user = db_sess.query(User).filter(User.name == form_data['name']).first()
 
         if existing_user:
-            oshibochka = "Пользователь с таким именем уже зарегистрирован."
-        elif not formochka_dannih['additionally']:
-            oshibochka = "Напишите что-нибудь о себе"
-        elif not formochka_dannih['age'].isdigit() or int(formochka_dannih['age']) < 18:
-            oshibochka = "Вы должны быть старше 18 лет для регистрации."
+            error = "Пользователь с таким именем уже зарегистрирован."
+        elif not form_data['additionally']:
+            error = "Напишите что-нибудь о себе"
+        elif not form_data['age'].isdigit() or int(form_data['age']) < 18:
+            error = "Вы должны быть старше 18 лет для регистрации."
         elif 'image' not in request.files:
-            oshibochka = "Необходимо загрузить изображение профиля."
+            error = "Необходимо загрузить изображение профиля."
         else:
             image = request.files['image']
             if image.filename == '':
-                oshibochka = "Необходимо выбрать файл изображения."
+                error = "Необходимо выбрать файл изображения."
             else:
-                age = int(formochka_dannih['age'])
-                imya_faila = secure_filename(image.filename)
-                image.save(os.path.join(app.config['UPLOAD_FOLDER'], imya_faila))
-                izobrajenie = os.path.join(app.config['UPLOAD_FOLDER'], imya_faila)
+                age = int(form_data['age'])
+                name_surname = secure_filename(image.filename)
+                image.save(os.path.join(app.config['UPLOAD_FOLDER'], name_surname))
+                picture = os.path.join(app.config['UPLOAD_FOLDER'], name_surname)
 
-                polzovatel = User()
-                polzovatel.name = formochka_dannih['name']
-                polzovatel.gender = formochka_dannih['gender']
-                polzovatel.age = age
-                polzovatel.additionally = formochka_dannih['additionally']
-                polzovatel.hashed_password = generate_password_hash(formochka_dannih['password'])
-                polzovatel.image = izobrajenie
+                user = User()
+                user.name = form_data['name']
+                user.gender = form_data['gender']
+                user.age = age
+                user.additionally = form_data['additionally']
+                user.hashed_password = generate_password_hash(form_data['password'])
+                user.image = picture
 
-                db_sess.add(polzovatel)
+                db_sess.add(user)
                 db_sess.commit()
 
-                session['name'] = formochka_dannih['name']
-                session['gender'] = formochka_dannih['gender']
+                session['name'] = form_data['name']
+                session['gender'] = form_data['gender']
                 session['age'] = age
-                session['additionally'] = formochka_dannih['additionally']
-                session['image'] = izobrajenie
+                session['additionally'] = form_data['additionally']
+                session['image'] = picture
 
                 return redirect(url_for('profile'))
     else:
-        formochka_dannih = {}
-    return render_template('register.html', error=oshibochka, form_data=formochka_dannih)
+        form_data = {}
+    return render_template('register.html', error=error, form_data=form_data)
 
 
 @app.route('/profile')
