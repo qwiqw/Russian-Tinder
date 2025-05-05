@@ -103,6 +103,10 @@ def login():
 
     return render_template('sing_in.html', error=error)
 
+@app.route('/find', methods=['GET', 'POST'])
+def find():
+    pass
+
 
 if __name__ == '__main__':
     db_session.global_init("db/users.db")
