@@ -68,7 +68,7 @@ def register():
                 session['additionally'] = form_data['additionally']
                 session['image'] = picture
 
-                return redirect(url_for('profile'))
+                return redirect(url_for('login'))
     else:
         form_data = {}
     return render_template('register.html', error=error, form_data=form_data)
@@ -97,15 +97,19 @@ def login():
             session['age'] = user.age
             session['additionally'] = user.additionally
             session['image'] = user.image
-            return redirect(url_for('profile'))
+            return redirect(url_for('find'))
         else:
             error = "Неверное имя пользователя или пароль."
+            return redirect(url_for('find'))
 
     return render_template('sing_in.html', error=error)
 
+
 @app.route('/find', methods=['GET', 'POST'])
 def find():
-    pass
+    db = db_session.create_session()
+    users = db.query(User).all()
+    return render_template('questionnaires.html', users=users)
 
 
 if __name__ == '__main__':
