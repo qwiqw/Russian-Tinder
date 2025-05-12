@@ -13,6 +13,7 @@ class User(SqlAlchemyBase, UserMixin):
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     gender = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     additionally = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    link = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     image = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 
     def set_password(self, password):
