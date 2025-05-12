@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import os
-import re
 from data import db_session
 from data.user import User
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -29,6 +28,7 @@ def register():
         form_data['gender'] = request.form['gender']
         form_data['age'] = request.form['age']
         form_data['additionally'] = request.form['additionally']
+        form_data['link'] = request.form['link']
 
         db_sess = db_session.create_session()
         existing_user = db_sess.query(User).filter(User.name == form_data['name']).first()
@@ -41,6 +41,8 @@ def register():
             error = "Вы должны быть старше 18 лет для регистрации."
         elif 'image' not in request.files:
             error = "Необходимо загрузить изображение профиля."
+        elif not form_data['link']:
+            error = 'Необходимо оставить ссылку на соц сеть'
         else:
             image = request.files['image']
             if image.filename == '':
@@ -58,6 +60,7 @@ def register():
                 user.additionally = form_data['additionally']
                 user.hashed_password = generate_password_hash(form_data['password'])
                 user.image = picture
+                user.link = form_data['link']
 
                 db_sess.add(user)
                 db_sess.commit()
@@ -67,6 +70,7 @@ def register():
                 session['age'] = age
                 session['additionally'] = form_data['additionally']
                 session['image'] = picture
+                session['link'] = form_data['link']
 
                 return redirect(url_for('login'))
     else:
@@ -97,6 +101,7 @@ def login():
             session['age'] = user.age
             session['additionally'] = user.additionally
             session['image'] = user.image
+            session['link'] = user.link
             return redirect(url_for('find'))
         else:
             error = "Неверное имя пользователя или пароль."
@@ -110,6 +115,14 @@ def find():
     db = db_session.create_session()
     users = db.query(User).all()
     return render_template('questionnaires.html', users=users)
+
+
+@app.route('/like')
+def like():
+    id = request.args.get('id')
+    db = db_session.create_session()
+    user = db.query(User).get(id)
+    return render_template('like.html', link=user.link)
 
 
 if __name__ == '__main__':
