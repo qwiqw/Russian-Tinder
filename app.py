@@ -3,7 +3,6 @@ import os
 from data import db_session
 from data.user import User
 from werkzeug.security import generate_password_hash, check_password_hash
-from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
@@ -49,9 +48,10 @@ def register():
                 error = "Необходимо выбрать файл изображения."
             else:
                 age = int(form_data['age'])
-                name_surname = secure_filename(image.filename)
-                image.save(os.path.join(app.config['UPLOAD_FOLDER'], name_surname))
-                picture = os.path.join(app.config['UPLOAD_FOLDER'], name_surname)
+                count = db_sess.query(User).count()
+                filename = f"image{count + 1}.jpg"
+                image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                picture = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
                 user = User()
                 user.name = form_data['name']
