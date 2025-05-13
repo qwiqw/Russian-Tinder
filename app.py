@@ -105,7 +105,6 @@ def login():
             return redirect(url_for('find'))
         else:
             error = "Неверное имя пользователя или пароль."
-            return redirect(url_for('find'))
 
     return render_template('sing_in.html', error=error)
 
@@ -123,6 +122,43 @@ def like():
     db = db_session.create_session()
     user = db.query(User).get(id)
     return render_template('like.html', link=user.link)
+
+
+@app.route('/edit_profile', methods=['GET', 'POST'])
+def edit_profile():
+    if 'name' not in session:
+        return redirect(url_for('login'))
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.name == session['name']).first()
+    error = None
+    if not user:
+        return "Пользователь не найден", 404
+    if request.method == 'POST':
+        user.name = request.form['name']
+        user.gender = request.form['gender']
+        user.age = int(request.form['age'])
+        user.additionally = request.form['additionally']
+        user.link = request.form['link']
+        if request.form['password']:
+            user.hashed_password = generate_password_hash(request.form['password'])
+        if 'image' in request.files:
+            image = request.files['image']
+            if image.filename != '':
+                count = db_sess.query(User).count()
+                filename = f"image{count + 1}.jpg"
+                image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                user.image = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+        db_sess.commit()
+        session['name'] = user.name
+        session['gender'] = user.gender
+        session['age'] = user.age
+        session['additionally'] = user.additionally
+        session['image'] = user.image
+        session['link'] = user.link
+
+        return redirect(url_for('profile'))
+    return render_template('edit_profile.html', user=user, error=error)
 
 
 if __name__ == '__main__':
