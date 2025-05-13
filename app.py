@@ -112,7 +112,15 @@ def login():
 @app.route('/find', methods=['GET', 'POST'])
 def find():
     db = db_session.create_session()
-    users = db.query(User).all()
+    user = db.query(User).filter(User.name == session['name']).first()
+    current_gender = user.gender
+    if current_gender == 'Мужской':
+        opposite_gender = 'Женский'
+    else:
+        opposite_gender = 'Мужской'
+
+    users = db.query(User).filter(User.gender == opposite_gender).all()
+
     return render_template('questionnaires.html', users=users)
 
 
